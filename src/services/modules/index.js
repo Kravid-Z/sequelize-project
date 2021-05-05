@@ -2,6 +2,7 @@ const express = require("express");
 const Module = require("../../db").Module;
 const Class = require("../../db").Class;
 const Student = require("../../db").Student;
+const { Op, Sequelize } = require("sequelize");
 const router = express.Router();
 
 router
@@ -9,8 +10,30 @@ router
   .get(async (req, res, next) => {
     try {
       const data = await Module.findAll({
+        where: {
+          [Op.or]: [
+            { name: { [Op.iLike]: "%" + req.query.name + "%" } },
+            {
+              classes: Sequelize.where(Sequelize.col(`"classes".topic`), {
+                [Op.iLike]: "%" + req.query.className + "%",
+              }),
+              // {
+              //   where: {
+              //     "classes.topic": {
+              //       [Op.iLike]: "%" + req.query.className + "%",
+              //     },
+              //   },
+              // },
+            },
+          ],
+        },
         include: {
           model: Class,
+          // where: {
+          //   [Op.or]: [
+          //     { topic: { [Op.iLike]: "%" + req.query.className + "%" } },
+          //   ],
+          // },
           include: { model: Student, through: { attributes: [] } },
         },
       });
