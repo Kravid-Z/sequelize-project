@@ -1,5 +1,5 @@
 const express = require("express");
-
+const Tutor = require("../../db").Tutor;
 const router = express.Router();
 
 router
@@ -12,6 +12,8 @@ router
   })
   .post(async (req, res, next) => {
     try {
+      const data = await Student.bulkCreate(req.body.data);
+      res.status(200).send(data);
     } catch (e) {
       console.log(e);
     }
