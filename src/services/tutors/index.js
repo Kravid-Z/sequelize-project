@@ -1,11 +1,36 @@
 const express = require("express");
 const Tutor = require("../../db").Tutor;
+const Class = require("../../db").Class;
+const { Op, Sequelize } = require("sequelize");
+
 const router = express.Router();
 
 router
   .route("/")
   .get(async (req, res, next) => {
     try {
+      if (!req.query){
+        const data = await Tutor.findAll()
+        res.status(200).send(data)
+      }else{
+        const data = await Tutor.findAll({
+          where: {
+            [Op.or]: [
+              { name: { [Op.iLike]: "%" + req.query.name + "%" } },
+              {
+                classes: Sequelize.where(Sequelize.col(`"classes".topic`), {
+                  [Op.iLike]: "%" + req.query.className + "%",
+                }),
+              },
+            ],
+          },
+          include: {
+            model: Class,
+            include: { model: Tutor, through: { attributes: [] } },
+          },
+        });
+        res.send(data);
+      }
     } catch (e) {
       console.log(e);
     }
