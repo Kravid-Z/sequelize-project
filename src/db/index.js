@@ -9,8 +9,9 @@ const Student = require("./students")(sequelize, DataTypes);
 const Module = require("./modules")(sequelize, DataTypes);
 const Class = require("./classes")(sequelize, DataTypes);
 const Address = require("./address")(sequelize, DataTypes);
-Class.belongsTo(Module);
 Module.hasMany(Class);
+Class.belongsTo(Module);
+
 Student.hasOne(Address);
 Address.belongsTo(Student);
 Class.belongsToMany(Student, { through: "StudentClass", timestamps: false });
@@ -20,4 +21,4 @@ sequelize
   .then(() => console.log("Connection established"))
   .catch((e) => console.log(e));
 
-module.exports = sequelize;
+module.exports = { sequelize, Student, Module, Class, Address };

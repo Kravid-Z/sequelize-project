@@ -9,7 +9,7 @@ app.use(express.json());
 app.use("/api", services);
 const port = process.env.PORT || 5000;
 
-db.sync({ force: true }).then(() => {
+db.sequelize.sync().then(() => {
   app.listen(port, () => console.log("server is running: " + port));
   app.on("error", (error) =>
     console.info(" ❌ Server is not running due to : ", error)
